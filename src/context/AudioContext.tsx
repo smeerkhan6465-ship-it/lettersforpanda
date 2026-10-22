@@ -28,7 +28,9 @@ interface AudioContextType {
 const AudioContext = createContext<AudioContextType | null>(null);
 
 export const MUSIC1_SRC = '/assets/aistudio/music1_e4c2ec43.mp3';
+export const MUSIC1_FALLBACK = '/assets/music1.mp3';
 export const MUSIC2_SRC = '/assets/aistudio/music2_be725d27.mp3';
+export const MUSIC2_FALLBACK = '/assets/music2.mp3';
 
 export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const music1Ref = useRef<HTMLAudioElement | null>(null);
@@ -71,17 +73,32 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (activeTrack === 'music2') setIsPlaying(false);
     };
 
+    // Resilient fallback if primary path is not found
+    const handleM1Error = () => {
+      if (m1 && !m1.src.endsWith(MUSIC1_FALLBACK)) {
+        m1.src = MUSIC1_FALLBACK;
+        m1.load();
+      }
+    };
+    const handleM2Error = () => {
+      if (m2 && !m2.src.endsWith(MUSIC2_FALLBACK)) {
+        m2.src = MUSIC2_FALLBACK;
+        m2.load();
+      }
+    };
+
     m1.addEventListener('canplay', handleM1CanPlay);
     m2.addEventListener('canplay', handleM2CanPlay);
     m1.addEventListener('play', handleM1Play);
     m1.addEventListener('pause', handleM1Pause);
     m2.addEventListener('play', handleM2Play);
     m2.addEventListener('pause', handleM2Pause);
+    m1.addEventListener('error', handleM1Error);
+    m2.addEventListener('error', handleM2Error);
 
     // Audio is loaded but kept paused until user enters and interacts
     setIsPlaying(false);
     setAutoplayBlocked(true);
-
 
     return () => {
       m1.removeEventListener('canplay', handleM1CanPlay);
@@ -90,6 +107,10 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       m1.removeEventListener('pause', handleM1Pause);
       m2.removeEventListener('play', handleM2Play);
       m2.removeEventListener('pause', handleM2Pause);
+      m1.removeEventListener('error', handleM1Error);
+      m2.removeEventListener('error', handleM2Error);
+      m1.pause();
+      m2.pause();
     };
   }, []);
 
@@ -215,21 +236,27 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         trackName,
       }}
     >
-      {/* Two persistent, preloaded audio instances */}
+      {/* Two persistent, preloaded audio instances with automatic fallback */}
       <audio
         ref={music1Ref}
         src={MUSIC1_SRC}
         loop
         preload="auto"
         className="hidden"
-      />
+      >
+        <source src={MUSIC1_SRC} type="audio/mpeg" />
+        <source src={MUSIC1_FALLBACK} type="audio/mpeg" />
+      </audio>
       <audio
         ref={music2Ref}
         src={MUSIC2_SRC}
         loop
         preload="auto"
         className="hidden"
-      />
+      >
+        <source src={MUSIC2_SRC} type="audio/mpeg" />
+        <source src={MUSIC2_FALLBACK} type="audio/mpeg" />
+      </audio>
 
       {children}
     </AudioContext.Provider>
