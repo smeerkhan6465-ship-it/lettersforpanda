@@ -1,0 +1,6 @@
+{
+  "name": "Panda's Birthday Countdown",
+  "description": "A dreamy romantic birthday countdown and daily love letters for Panda",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

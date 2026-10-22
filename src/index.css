@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-handwriting: 'Caveat', cursive;
+    --font-romantic: 'Dancing Script', cursive;
+
+    /* Romantic Luxury Color Palette */
+    --color-black-cherry: #3A0E1E;
+    --color-cranberry: #8E2D3B;
+    --color-dusty-mauve: #A07A80;
+    --color-blush-veil: #E7C7CF;
+    --color-porcelain: #F5E9ED;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: #F5E9ED;
+    color: #3A0E1E;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+.font-serif-elegant {
+  font-family: var(--font-serif);
+}
+
+.font-handwriting {
+  font-family: 'Caveat', cursive;
+}
+
+.font-romantic {
+  font-family: 'Dancing Script', cursive;
+}
+
+/* Palette utility classes */
+.text-cherry { color: #3A0E1E; }
+.bg-cherry { background-color: #3A0E1E; }
+.border-cherry { border-color: #3A0E1E; }
+
+.text-cranberry { color: #8E2D3B; }
+.bg-cranberry { background-color: #8E2D3B; }
+.border-cranberry { border-color: #8E2D3B; }
+
+.text-mauve { color: #A07A80; }
+.bg-mauve { background-color: #A07A80; }
+.border-mauve { border-color: #A07A80; }
+
+.text-blush { color: #E7C7CF; }
+.bg-blush { background-color: #E7C7CF; }
+.border-blush { border-color: #E7C7CF; }
+
+.text-porcelain { color: #F5E9ED; }
+.bg-porcelain { background-color: #F5E9ED; }
+.border-porcelain { border-color: #F5E9ED; }
+
+/* Ethereal letter reveal animation */
+@keyframes letterFadeIn {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+@keyframes moteDrift {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(8px, -14px);
+    opacity: 0.55;
+  }
+}
+
+.animate-letter-fade {
+  animation: letterFadeIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-mote {
+  animation: moteDrift 8s ease-in-out infinite;
+}
+
+/* Delicate floating animations */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(6px) rotate(-1.5deg);
+  }
+}
+
+@keyframes swayMascot {
+  0%, 100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(1.5deg) translateY(-5px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(45deg);
+  }
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.15);
+  }
+  30% {
+    transform: scale(1.02);
+  }
+  45% {
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+.animate-float-gentle {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+}
+
+.animate-sway-mascot {
+  animation: swayMascot 4.5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkleTwinkle 3.2s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-heartbeat {
+  animation: heartBeat 2.4s ease-in-out infinite;
+}
+
+/* Envelope 3D fold perspective */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Custom scrollbar for letter modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(253, 242, 248, 0.5);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(244, 114, 182, 0.3);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 114, 182, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-gentle,
+  .animate-float-reverse,
+  .animate-sway-mascot,
+  .animate-pulse-glow,
+  .animate-sparkle,
+  .animate-heartbeat {
+    animation: none !important;
+  }
+}

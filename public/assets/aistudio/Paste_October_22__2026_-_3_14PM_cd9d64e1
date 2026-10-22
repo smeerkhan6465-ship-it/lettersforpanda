@@ -1,0 +1,486 @@
+# GOOGLE AI STUDIO MASTER PROMPT — PANDA'S BIRTHDAY COUNTDOWN 💗
+
+Build a beautiful, fully functional, mobile-first romantic birthday countdown website for my girlfriend. This is the first version of a larger project, so create clean, maintainable code that we can extend later.
+
+## 1. PROJECT GOAL
+
+Create a dreamy, personal website for my girlfriend, whom I lovingly call “Panda”, “meri jaan”, “meri cutu” and “baccha”.
+
+Her birthday is **20 November 2026**. She lives in Dubai, so all countdown calculations, daily message changes, and birthday unlocking MUST use the `Asia/Dubai` timezone.
+
+This first version must contain ONLY the countdown experience. Do not build the birthday celebration page, photo gallery, quizzes, or any post-countdown content yet. On her birthday, show a beautiful unlocked state and a placeholder action for the future birthday page, which we will implement separately.
+
+The website should feel like a little world created by a boyfriend who genuinely loves his girlfriend. Avoid generic birthday templates and excessive flashy effects.
+
+## 2. VISUAL DESIGN
+
+Create a dreamy, romantic aesthetic using:
+- Pastel pink, blush pink, lavender, soft purple, and creamy white.
+- A cute baby panda holding a tiny pink heart as the visual mascot.
+- Floating hearts, glowing stars, tiny sparkles, soft clouds, and subtle ambient particles.
+- Beautiful handwritten-style typography for letters, paired with an elegant, readable font for the rest of the UI.
+- Soft gradients, translucent cards, gentle shadows, rounded corners, and delicate borders.
+- Smooth, tasteful animations rather than excessive movement.
+
+The page should feel romantic, magical, cozy, personal, and emotionally warm.
+
+Make it responsive for mobile phones, tablets, and desktop browsers. On mobile, the main content should fit naturally within the screen and remain easy to read and interact with.
+
+Do not use Namaste-themed elements. Do not add watermarks, ads, unnecessary navigation menus, or unrelated sections.
+
+## 3. MAIN COUNTDOWN SCREEN
+
+The page should have the following layout:
+
+### A. Header
+
+Display a small, elegant heading:
+
+“A LITTLE WORLD, JUST FOR YOU ♡”
+
+Add subtle floating sparkles and a small heart icon.
+
+### B. Panda mascot
+
+Show a cute panda illustration holding a pink heart. Use a suitable available image asset or create a simple, attractive illustration using CSS/SVG.
+
+Underneath, display:
+
+“For my Panda 🐼💗”
+
+And a smaller subtitle:
+
+“A little closer to your special day…”
+
+The mascot can gently float or sway. Keep animations lightweight and smooth.
+
+### C. Live countdown
+
+Display four separate animated number cards:
+
+DAYS | HOURS | MINUTES | SECONDS
+
+The countdown must be real, continuously updating, and accurate.
+
+Target: `20 November 2026, 00:00:00 Asia/Dubai`.
+
+Use a reliable timezone-aware date implementation. Do not calculate the target by simply adding a fixed number of hours to the visitor's local clock. The countdown must show the same remaining time for visitors in every country.
+
+Recalculate the remaining time every second. Calculate the remaining duration from the current instant rather than decrementing a counter blindly.
+
+Display a small caption above the timer:
+
+“TIME UNTIL YOUR BIRTHDAY”
+
+Below it, display a dynamically changing line, such as:
+
+“Only 15 days left, my love…”
+
+The number of days must be calculated automatically. Do not hardcode the countdown number in the UI.
+
+### D. Today's letter
+
+Below the countdown, display:
+
+“Today's little letter is waiting for you… 💌”
+
+Add a short subtitle:
+
+“A little note, written especially for you.”
+
+Show a beautiful sealed envelope with a heart-shaped wax seal, a soft glow, and a subtle floating animation.
+
+Add the button:
+
+“Open today's letter ♡”
+
+The button must work. When clicked, play a smooth envelope-opening animation and reveal that day's prewritten message.
+
+### E. Letter reveal
+
+The envelope should open naturally, with the flap moving and a paper letter sliding out. Add a few gentle sparkles or floating hearts.
+
+Display the letter on a beautifully styled paper card with:
+- A date-specific heading.
+- A short personalized opening.
+- The full message for that date.
+- A sweet sign-off.
+- A small animated heart near the bottom.
+
+Use a readable handwritten-style font. Do not sacrifice readability for decoration.
+
+The message must appear exactly as provided in the daily message data. Do not rewrite, summarize, translate, or generate replacement messages at runtime.
+
+After the letter is opened, the user should be able to read it comfortably. Include a subtle close/return control so she can return to the countdown screen without changing the current day's message.
+
+Do not create a message archive, previous-message button, calendar of past letters, or a feature for opening old messages.
+
+### F. Birthday lock
+
+Near the bottom of the countdown page, show a small locked gift box or glowing heart.
+
+Display:
+
+“Something special is waiting for you… 🎁”
+
+And:
+
+“Your birthday surprise is still sleeping.”
+
+Show a locked indicator and the message:
+
+“Unlocks on 20 November ♡”
+
+Before the birthday, the lock must remain locked. Do not provide a working button that bypasses the date restriction.
+
+On the birthday, transition to a beautiful unlocked state:
+
+“It's finally your day, my Panda! 🎂💗”
+
+Show a glowing gift and a placeholder button labelled:
+
+“Enter your birthday surprise ♡”
+
+For this first version, do not implement the destination page. The button should only indicate where the future birthday experience will connect. We will design that page later.
+
+## 4. DAILY MESSAGE SYSTEM
+
+Create a data-driven daily message system using the date in the `Asia/Dubai` timezone.
+
+The countdown and message selection must use the same Dubai calendar date.
+
+Requirements:
+- Every date from 22 October 2026 through 20 November 2026 has its own message.
+- The messages are fixed, prewritten, and unique.
+- The same message must remain visible throughout the same Dubai calendar day.
+- Refreshing the website must not generate or select a different message.
+- At Dubai midnight, the current message must automatically update, even if the website remains open.
+- When the date changes, update the letter heading and daily greeting.
+- If the page is opened for the first time on a later date, show that date's message immediately.
+- Do not show messages for future dates.
+- Do not display an archive or navigation for past dates.
+- Do not rely on localStorage alone to decide the current date. Derive it from the actual Dubai date.
+- Do not call an AI API to generate romantic messages. Use the supplied messages below.
+
+The countdown should show the number of calendar days remaining until 20 November. For example, on 19 November, show “1 day left”. At Dubai midnight on 20 November, transition to the birthday state.
+
+## 5. DAILY LETTER CONTENT
+
+Use these exact messages. The headings, countdown labels, and message content should be rendered from the current Dubai date.
+
+### 22 October 2026 — 29 days left
+
+**Heading:** Meri cutu si Panda 🐼💗
+
+“Pata hai baccha, kabhi kabhi sochta hoon ki ek game mein mile do log aakhir ek doosre ke liye itne khaas kaise ban gaye. Tum meri zindagi mein aayi toh dheere-dheere tumhari chhoti-chhoti baatein bhi mere din ka sabse pyaara hissa ban gayin. Tumhara sharmana, tumhari awaaz aur tumhara woh cute sa andaaz… uff, tumhe kya pata tum mere chehre par kitni aasani se smile le aati ho. 🥹❤️”
+
+Sign-off: Bas aise hi hamesha muskurati rehna, meri Panda. ♡
+
+### 23 October 2026 — 28 days left
+
+**Heading:** Meri khoobsurat si jaan 🌷
+
+“Baccha, tumhari khoobsurati ki tareef karne baithun toh shayad lafz kam pad jaayen. Tumhari aankhon mein ek ajeeb sa sukoon hai, tumhari awaaz mein ek alag si mithaas, aur tumhari muskurahat mein woh baat hai jo mere boring se din ko bhi khoobsurat bana deti hai. Lekin sach kahun? Tum mujhe sirf apni khoobsurati ki wajah se nahi, balki apne hone ki wajah se itni pyaari ho.”
+
+Sign-off: Meri nazron mein tum hamesha special rahogi. 💗
+
+### 24 October 2026 — 27 days left
+
+**Heading:** Uff, tumhara sharmana! 😭💕
+
+“Achha meri Panda, ek baat batao… tumhe pata bhi hai ki jab tum sharmati ho toh mera kya haal hota hai? Main normal rehne ki kitni bhi acting kar loon, andar se toh bas yahi chal raha hota hai ki YA ALLAH, ITNI CUTE KYUN HAI YE. 😂❤️ Tumhari woh chhoti si ada, tumhari baatein aur tumhara pyaara sa andaaz mere liye kabhi purana nahi ho sakta.”
+
+Sign-off: Tum aise hi mujhe pagal karti rehna, cutie. 🐼
+
+### 25 October 2026 — 26 days left
+
+**Heading:** Hamari ajeeb si, pyaari si kahaani 💌
+
+“Hum ek game mein mile the, aur us waqt shayad hum dono ko andaaza bhi nahi tha ki ek din tum mere liye itni important ban jaogi. Dekho na, duniya mein kitne log milte hain, kitni baatein hoti hain, lekin har koi dil mein apni jagah nahi bana pata. Tumne toh pata nahi kab apni jagah bana li, aur ab tumhari jagah par kisi aur ko imagine karna bhi mere liye mumkin nahi lagta.”
+
+Sign-off: Hamari mulaqat meri favourite kahaaniyon mein se ek hai. ♡
+
+### 26 October 2026 — 25 days left
+
+**Heading:** Meri jaan, apna khayal rakhna 🧸
+
+“Baccha, kaash main tumhare paas hota toh kabhi kabhi tumhe bas aaram karne deta, tumhari fikr karta aur tumhe yaad dilata ki har waqt strong rehna zaroori nahi hai. Jab tabiyat theek na ho, jab din mushkil ho, toh tumhe khud par itna bojh daalne ki zarurat nahi. Tumhara sukoon aur tumhari sehat bhi bahut important hain. Main chahta hoon ki tum apne saath bhi utni hi narmi rakho jitni tum doosron ko deti ho.”
+
+Sign-off: Please apna khayal rakhna, meri bacchi. ❤️
+
+### 27 October 2026 — 24 days left
+
+**Heading:** Tum meri favourite aadat ho 💗
+
+“Tumhari ek message notification se jo smile aati hai na, uska koi logic nahi hai. Kabhi main kisi kaam mein busy hota hoon aur tumhari baat yaad aate hi khud hi muskura deta hoon. Tumhari cute si baatein, tumhara mujhe tang karna, tumhara sharmana—sab kuch mere liye itna pyaara hai. Shayad mohabbat ka ek hissa yahi hai ki koi insaan door rehkar bhi tumhare din mein itni jagah bana le.”
+
+Sign-off: Aur meri favourite aadat, tumhe pyaar karna. 🥹
+
+### 28 October 2026 — 23 days left
+
+**Heading:** My Panda, my person 🐼
+
+“Main chahta hoon ki tumhe mere saath kabhi apni value prove na karni pade. Tumhe har din perfect hone ki zarurat nahi, har baat mein strong dikhne ki zarurat nahi. Tum apni asli wali tum rehna—kabhi cute, kabhi emotional, kabhi moody, kabhi bilkul pagal. Mujhe tumhari woh version bhi pyaari hai jo duniya ko shayad har waqt dekhne ko nahi milti.”
+
+Sign-off: Tumhe har waqt pretend karne ki zarurat nahi, meri jaan. ♡
+
+### 29 October 2026 — 22 days left
+
+**Heading:** Mohabbat jo waqt ke saath aur gehri ho 💌
+
+“Main chahta hoon ki meri mohabbat sirf khoobsurat alfaaz tak limited na rahe. Main apne andar woh qualities develop karna chahta hoon jo ek din mujhe tumhare liye aur behtar partner banaayen—sabr, samajh, zimmedaari aur wafadaari. Tum mere liye khaas ho, aur tumhare saath apni zindagi ke sapne dekhna mujhe khud par kaam karne ki wajah deta hai. Main chahta hoon ki tum meri baaton ke saath mere efforts mein bhi mohabbat mehsoos karo.”
+
+Sign-off: Main har din thoda behtar banne ki koshish karunga. ❤️
+
+### 30 October 2026 — 21 days left
+
+**Heading:** Tumhari awaaz ka sukoon 🌙
+
+“Panda, tumhari awaaz mein mere liye ek alag hi sukoon hai. Kabhi kabhi lafzon se zyada kisi ka bolne ka andaaz yaad reh jaata hai, aur tumhare saath bhi aisa hi hai. Tumhari baatein sunna, tumhari hansi aur woh chhoti chhoti reactions—ye sab mere liye aise moments hain jinhe main baar-baar yaad karta hoon. Tumhe shayad andaaza bhi nahi ki tumhari ek pyaari si baat mera mood kitna achha kar sakti hai.”
+
+Sign-off: Kaash abhi tumhari awaaz sun sakta. 🥹💗
+
+### 31 October 2026 — 20 days left
+
+**Heading:** Meri loyalty, meri mohabbat ❤️
+
+“Meri jaan, main tumse ek perfect insaan hone ka vaada nahi kar sakta, kyunki main bhi seekh raha hoon, badal raha hoon aur apni kamiyon par kaam kar raha hoon. Lekin main tumse sach bolne, tumhari izzat karne, tumhari baat sunne aur hamare rishte ki hifazat karne ki niyyat zaroor rakhta hoon. Mere liye wafadaari sirf kisi aur ko na chunna nahi, balki har din apne rishte ko izzat aur sachchai dena bhi hai.”
+
+Sign-off: Main chahta hoon tum mere saath safe aur respected mehsoos karo. ♡
+
+### 1 November 2026 — 19 days left
+
+**Heading:** November aa gaya, meri Panda! 🎀
+
+“Bacchaaa, birthday month aa gaya! 🥹💗 Ab mujhe aur bhi zyada excitement ho rahi hai, kyunki dheere-dheere woh din kareeb aa raha hai jis din meri favourite girl duniya mein aayi thi. Kaash main tumhe dekh pata jab tum ye messages padhkar smile karti ho. Main chahta hoon ki is countdown ka har din tumhare liye ek chhota sa happy moment ban sake.”
+
+Sign-off: Nineteen days, my love. Let the little surprises begin! 🐼
+
+### 2 November 2026 — 18 days left
+
+**Heading:** Tumhe bina kisi wajah ke pasand karta hoon 💕
+
+“Tumhe pata hai mujhe tumse mohabbat karne ke liye kisi special reason ki zarurat nahi padti. Haan, tumhari khoobsurati, tumhari awaaz aur tumhari pyaari aadatein mujhe deewana banati hain, lekin agar kabhi tum thaki hui ho, udaas ho ya tumhe khud mein koi kami mehsoos ho, tab bhi tum mere liye utni hi pyaari rahogi. Tum koi perfect picture nahi ho jise har waqt perfect rehna hai. Tum meri woh insaan ho jise main uski poori reality ke saath jaan-na aur samajhna chahta hoon.”
+
+Sign-off: Bas tum, apni asli wali tum. ❤️
+
+### 3 November 2026 — 17 days left
+
+**Heading:** Meri favourite notification 📱💗
+
+“Sach bataun Panda, tumhara message aata hai toh main kabhi kabhi notification dekhkar hi smile kar deta hoon. Phir chahe message mein sirf ek chhota sa word ho ya koi random si baat, tumhara hona hi use special bana deta hai. Aur jab tum cute banne ki koshish bhi nahi karti, tab aur zyada cute lagti ho. Haan ji, ye complaint nahi hai. Ye toh tumhare against ek official pyaar bhari report hai. 😂🐼”
+
+Sign-off: Case closed. You are too cute. ♡
+
+### 4 November 2026 — 16 days left
+
+**Heading:** Tumhari duaon jaisi mohabbat 🤍
+
+“Tum mere liye jitni fikr karti ho, jitni duaayein maangti ho aur jitna effort lagati ho, main uski qadar karta hoon. Shayad main har baar perfect alfaaz mein express nahi kar pata, lekin main chahta hoon ki tumhe pata rahe ki tumhari care mere liye bahut maayne rakhti hai. Main bhi tumhare liye apni taraf se utni hi sincerity aur mehnat lana chahta hoon. Tumhari mohabbat ko main koi chhoti si cheez samajhkar kabhi lena nahi chahta.”
+
+Sign-off: Allah tumhe sukoon, sehat aur khushiyan de, meri jaan. Ameen. 🤍
+
+### 5 November 2026 — 15 days left
+
+**Heading:** Meri cutu, tum par dil haar baitha hoon 💌
+
+“Pata nahi tum mein aisa kya hai, lekin tumhari baaton mein ek aisi kashish hai ki main baar-baar tumhari taraf khinchta chala aata hoon. Tumhara sharmana, woh pyaari si awaaz, tumhari aankhein aur tumhara mujhe dekhne ya baat karne ka andaaz—sab kuch mere dil ke bahut kareeb hai. Main tumhari tareef mein kitne bhi alfaaz likh loon, mujhe lagta hai abhi bhi kuch na kuch reh gaya.”
+
+Sign-off: Uff, meri Panda. Tum bahut pyaari ho. 🥹❤️
+
+### 6 November 2026 — 14 days left
+
+**Heading:** Agar hum paas hote… 🌷
+
+“Kabhi sochta hoon agar hum paas hote toh kitni chhoti chhoti baatein saath karte. Tum apni random stories sunati, main tumhe tang karta, tum sharmati aur phir mujhe daant bhi deti. 😂 Kabhi bas saath baithkar ek normal sa din guzaarte, bina kisi special plan ke. Shayad future ki sabse khoobsurat baat yehi hai ki usmein bade sapnon ke saath aise simple moments ki bhi jagah hai.”
+
+Sign-off: Ek din in chhoti khwahishon ko bhi haqeeqat banana hai. 💗
+
+### 7 November 2026 — 13 days left
+
+**Heading:** Tum meri inspiration bhi ho ✨
+
+“Tumhare liye mehnat karne ki ek wajah ye bhi hai ki main apne future ko lekar serious rehna chahta hoon. Main chahta hoon ki ek din apni zimmedaariyan achhe se nibha sakun, apne pairon par mazbooti se khada ho sakun aur apne sapnon ke liye genuinely kaam karun. Main tumhe sirf apne future ke waade nahi dikhana chahta; main chahta hoon ki waqt ke saath mere efforts bhi un waadon ko support karein. Aur haan, tum bhi apne sapnon ko kabhi chhota mat samajhna.”
+
+Sign-off: We both deserve a beautiful future, meri jaan. ❤️
+
+### 8 November 2026 — 12 days left
+
+**Heading:** Meri duniya ki sabse pyaari aankhein 👀💗
+
+“Panda, tumhari aankhon ki tareef kitni baar karun? Unhe yaad karta hoon toh lagta hai jaise tumhare expressions mein hi poori kahaani chhupi hoti hai. Kabhi cute, kabhi shararti, kabhi sharmili—aur main har baar tumhari taraf dekhkar kuch na kuch naya notice kar leta hoon. Tumhari khoobsurati ko sirf ek cheez mein describe karna mushkil hai, kyunki tumhara poora andaaz hi tumhe mere liye itna special banata hai.”
+
+Sign-off: Meri nazron mein tumhari apni hi jagah hai, cutie. 🐼
+
+### 9 November 2026 — 11 days left
+
+**Heading:** Meri jaan, tumhe aaram karne ka bhi haq hai 🧸
+
+“Baccha, agar aaj ka din mushkil raha ho toh please khud ko thoda waqt dena. Har problem ka jawab turant dhoondhna zaroori nahi, aur har din productive hona bhi zaroori nahi. Kabhi bas aaram karna, paani peena, apna khayal rakhna aur dheere-dheere din guzaarna bhi kaafi hota hai. Main tumhe sirf tumhari happy, energetic version mein nahi, tumhare difficult days mein bhi samajhna chahta hoon.”
+
+Sign-off: No pressure, meri jaan. Take it one day at a time. 🤍
+
+### 10 November 2026 — 10 days left
+
+**Heading:** Bas das din, meri favourite girl! 🎂
+
+“Das din baaki hain, Panda! Aur mujhe abhi se excitement ho rahi hai. 🥹 Main chahta hoon ki tumhara birthday sirf ek date na lage, balki tumhe ye bhi yaad dilaye ki tumhara hona kitne logon ke liye khushi la sakta hai. Meri taraf se toh tumhare liye hamesha bahut saari duaayein, pyaar aur khushiyon ki khwahish rahegi. Tum deserve karti ho ki tumhe bhi pyaar mile, tumhari care ki jaaye aur tumhari khushi ko importance di jaaye.”
+
+Sign-off: Countdown officially entering its cute era! 💗🐼
+
+### 11 November 2026 — 9 days left
+
+**Heading:** Tumse milkar main aur behtar banna chahta hoon ❤️
+
+“Meri Panda, kuch log zindagi mein aakar humein apne baare mein bhi nayi cheezein samjha dete hain. Tumhare saath main apni kamiyon ko pehchanna, zyada responsible banna aur mohabbat ko sirf feelings nahi balki actions mein dikhana chahta hoon. Main perfect nahi hoon, aur mujhe pata hai ki sirf pyaar karna hi kaafi nahi hota—samajhna, sunna, respect dena aur galti hone par sudharna bhi zaroori hai. Main is safar mein sincere rehna chahta hoon.”
+
+Sign-off: I want my actions to make my words feel real. ♡
+
+### 12 November 2026 — 8 days left
+
+**Heading:** Tumhari chhoti chhoti adayein 😭💕
+
+“Tumhara sharmana, woh cute si baatein aur kabhi kabhi bina kisi baat ke mujhe tang karna… meri jaan, tumhe idea hai tum kitni adorable ho? Main kabhi tumhe batana chahta hoon ki tumhari ye chhoti aadatein mere liye kitni memorable hain. Shayad tum unhe normal samajhti ho, lekin mere liye wahi moments hain jo hamari baaton ko hamara apna banate hain.”
+
+Sign-off: Aise hi rehna, meri cute si troublemaker. 😂💗
+
+### 13 November 2026 — 7 days left
+
+**Heading:** Ek hafta, meri jaan! 💌
+
+“Ab toh bas ek hafta reh gaya hai. Main chahta hoon ki tumhare birthday tak ke ye din tumhare liye pyaare moments lekar aayein. Aur main ye bhi chahta hoon ki tum sirf birthday ke din hi nahi, normal dinon mein bhi apni importance mehsoos karo. Tumhari value kisi special occasion se decide nahi hoti. Tumhara hona hi mere liye special hai, aur tumhe ye baat sirf birthday par nahi, roz mehsoos honi chahiye.”
+
+Sign-off: Seven days closer to celebrating you, my love. 🐼
+
+### 14 November 2026 — 6 days left
+
+**Heading:** Main tumhe har din choose karna chahta hoon 🤍
+
+“Meri jaan, mohabbat mere liye sirf kisi ko paane ki khwahish nahi, balki uske saath ek sincere rishta banana bhi hai. Main chahta hoon ki hum ek doosre ki baat samjhein, mushkil waqt mein ek doosre ka saath dein aur khushi ke waqt ek doosre ki khushi badhaayein. Har insaan badalta hai, waqt bhi badalta hai, lekin main chahta hoon ki hamare rishte mein honesty, respect aur loyalty hamesha important rahein.”
+
+Sign-off: Aaj bhi tum, kal bhi tum—har din sachchai ke saath. ❤️
+
+### 15 November 2026 — 5 days left
+
+**Heading:** Meri Panda, meri pyaari si dua 🌙
+
+“Tumhare liye meri dua hai ki Allah tumhari mushkilein aasaan kare, tumhe sehat de, tumhare dil ko sukoon de aur tumhari zindagi mein aise din laayein jahan tum bina kisi fikr ke khulkar muskura sako. Main jaanta hoon ki har mushkil ka solution mere paas nahi hai, lekin main tumhari baat sunne, tumhe samajhne aur jitna ho sake tumhara saath dene ki koshish karna chahta hoon. Tumhe har cheez akele handle karne ki zarurat nahi.”
+
+Sign-off: Allah tumhe hamesha apni hifazat mein rakhe, meri jaan. Ameen. 🤍
+
+### 16 November 2026 — 4 days left
+
+**Heading:** Tumhare saath ek simple sa future 💗
+
+“Main kabhi kabhi hamare future ke baare mein sochta hoon aur mujhe sirf bade bade moments hi yaad nahi aate. Mujhe woh normal din bhi imagine hote hain jab hum ek doosre se random baatein karenge, ek doosre ki problems sunenge, saath hansenge aur ek doosre ki chhoti khushiyon mein shareek honge. Mere liye khoobsurat future ka matlab sirf sab kuch paa lena nahi, balki ek aisa rishta banana bhi hai jahan dono ko samjha jaaye aur dono ko apna hone ka sukoon mile.”
+
+Sign-off: InshaAllah, one step at a time, my Panda. 🥹
+
+### 17 November 2026 — 3 days left
+
+**Heading:** Meri favourite insaan, bas tum 💌
+
+“Tumse mohabbat karna mere liye kisi comparison ka game nahi hai. Mujhe kisi aur se tumhari tulna karne ki zarurat nahi padti, kyunki main tumhe tumhari apni pehchaan ke saath chahta hoon. Tumhari apni hansi, apni awaaz, apni aadatein, apni soch aur apni kahaani hai. Main chahta hoon ki tum mere saath kabhi kisi aur jaisi banne ki zarurat mehsoos na karo. Tum apni jagah par hi mere liye itni pyaari ho.”
+
+Sign-off: You don't need to be anyone else, meri Panda. ❤️
+
+### 18 November 2026 — 2 days left
+
+**Heading:** Bas do din, meri cutu! 🐼🎀
+
+“Bacchaaa, ab toh main genuinely excited hoon! 😂💗 Itne dinon se main chahta tha ki tumhare liye kuch aisa karun jo tumhe dekhkar smile aaye aur tumhe mehsoos ho ki kisi ne tumhare liye waqt nikala, socha aur effort kiya. Ho sakta hai ye website duniya ki sabse grand cheez na ho, lekin ismein tumhare liye bahut saari feelings hain. Main bas chahta hoon ki tum ise padhkar thoda sa muskurao aur tumhara din achha ho jaaye.”
+
+Sign-off: Two more sleeps, my birthday girl. 🥹💕
+
+### 19 November 2026 — 1 day left
+
+**Heading:** Kal tumhara din hai, meri jaan… 🥹❤️
+
+“Panda, kal tumhara birthday hai, aur main aaj tumse bas ek baat kehna chahta hoon. Tum mere liye bahut special ho—sirf isliye nahi ki tum khoobsurat ho ya tumhari baatein mujhe khush karti hain, balki isliye bhi ki hamara rishta mere dil ke bahut kareeb hai. Tumne mere liye jo care, efforts aur duaayein ki hain, main unki dil se qadar karta hoon. Main chahta hoon ki main bhi tumhare liye apni taraf se aise hi sincere efforts karta rahun. Tumhari zindagi mein khushiyan badhein, tumhari mushkilein aasaan hon aur tumhe woh sukoon mile jiski tum haqdaar ho.”
+
+Sign-off: Kal meri Panda ka special day hai. I hope I can make you smile. ♡
+
+### 20 November 2026 — BIRTHDAY DAY 🎂
+
+**Heading:** Happy Birthday, meri jaan, meri Panda! 🐼🎂💗
+
+“Happy Birthday, meri sabse pyaari Panda. 🥹❤️
+
+Aaj tumhara din hai, aur main chahta hoon ki tum ise ek smile ke saath shuru karo. Pata nahi main tumhe kitne alfaaz mein bata paunga ki tum mere liye kitni special ho, lekin maine koshish ki hai ki is chhoti si website ke har din mein apni mohabbat ka thoda sa hissa rakh sakun. Har countdown, har letter aur har message mein bas yahi chaaha hai ki tumhe mehsoos ho ki koi hai jo tumhari muskurahat ke liye dil se effort karna chahta hai.
+
+Tumse ek game mein milna meri zindagi ke un unexpected moments mein se tha jinka matlab shayad baad mein samajh aata hai. Mujhe nahi pata tha ki ek mulaqat itni pyaari kahaani ka hissa ban jaayegi. Tumhari awaaz, tumhari aankhein, tumhara sharmana, tumhari cute si baatein aur tumhara dil—ye sab mere liye bahut precious hain. Aur tumhari khoobsurati ki tareef toh main jitni bhi karun, kam hi lagegi. 🥹💗
+
+Main jaanta hoon ki main abhi perfect nahi hoon. Mere paas shayad har woh cheez nahi hai jo main tumhe dena chahta hoon, lekin mere paas apne aap ko behtar banane ki niyyat, mehnat karne ka iraada aur tumhare saath ek sincere future banane ki khwahish hai. Main chahta hoon ki waqt ke saath main apne actions se tumhe dikhata rahun ki tumhari care, tumhara trust aur hamara rishta mere liye kitna important hai.
+
+Aur meri jaan, meri ek dua hamesha rahegi: Allah tumhe sehat, sukoon, khushiyan aur aasaaniyan de. Tumhare mushkil din halka kare aur tumhe aise moments de jinmein tum bina kisi bojh ke muskura sako. Tumhe apne aap ko kabhi kam samajhne ki zarurat nahi hai. Tum apni jagah par bahut pyaari ho.
+
+Mujhe nahi pata ye website dekhkar tum kitna smile karogi, ya tumhe ye saare messages kitne pasand aayenge. Maine bas apni taraf se koshish ki hai ki tumhare liye kuch personal, kuch pyaara aur kuch aisa bana sakun jise dekhkar tumhe lage ki ye tumhare liye hi banaya gaya hai. Agar ismein koi kami reh gayi ho toh usse meri imperfect si koshish samajhna, meri jaan. Iske peeche jo feeling hai, woh bilkul dil se hai.
+
+Tumhara birthday bahut khoobsurat ho, meri Panda. Tumhari smile bani rahe, tumhare dil ko sukoon mile aur tumhari zindagi mein bahut saari achhi cheezein aayein. Thank you meri life ka hissa banne ke liye, meri baatein sunne ke liye aur mujhe itni pyaari memories dene ke liye.
+
+I love you, meri cutu si Panda. Happy Birthday, my love. 🐼🎂❤️”
+
+Sign-off: Hamesha tumhari khushi ki dua karne wala, tumhara Sameer. 💌
+
+## 6. AUDIO INTEGRATION
+
+I will provide my own music file as an asset.
+
+Use ONLY the audio file I provide. Do not generate music, substitute another track, or fetch an unrelated song.
+
+Include a small, elegant play/pause control that fits the romantic design. Because browser autoplay may be blocked, allow the user to start playback through a tap.
+
+If the music asset is not available during initial development, create the audio integration with a clearly documented asset path and a graceful fallback. Do not pretend the audio is working until the actual file has been added.
+
+Do not add AI-generated background music or unapproved sound effects.
+
+## 7. IMPLEMENTATION AND CODE QUALITY
+
+First inspect the existing project and its framework. If starting from an empty project, choose a suitable modern web stack supported by the environment.
+
+Build a real working website, not just a static mockup.
+
+Requirements:
+- Separate components for the countdown, daily letter, envelope animation, birthday lock, and audio control.
+- Keep the daily message data in one organized, date-keyed data structure.
+- Use a reliable timezone-aware method for `Asia/Dubai`.
+- Handle midnight rollover while the page remains open.
+- Handle expired countdowns without displaying negative values.
+- Avoid unnecessary dependencies and heavy animation libraries.
+- Include accessible buttons, readable contrast, and reduced-motion support.
+- Keep the design polished even when images or the music file are unavailable.
+- Ensure all interactions work; do not leave decorative controls pretending to be functional.
+- Test the countdown for different visitor time zones.
+- Test the date transitions from 19 November to 20 November Dubai time.
+- Do not add any feature that has not been requested.
+
+For the first version, the birthday lock is a frontend experience gate. Do not claim it provides server-level security. The actual birthday destination page will be implemented later.
+
+## 8. FUTURE DEVELOPMENT RULE
+
+This is Version 1 of an ongoing project.
+
+When I request new features later:
+- Preserve the existing design, daily messages, and countdown functionality unless I explicitly request a change.
+- Do not rewrite the entire project unnecessarily.
+- Make targeted modifications and explain which files changed.
+- Keep the code easy to extend.
+- Do not implement future features automatically just because they might be useful.
+
+## 9. FINAL ACCEPTANCE CHECKLIST
+
+Before considering the project complete, verify that:
+1. The website opens successfully and looks polished.
+2. The countdown targets 20 November 2026 at midnight in Dubai.
+3. All 30 date-specific messages are present and mapped correctly.
+4. The day count changes correctly, ending at 1 day left on 19 November.
+5. The birthday state activates at midnight on 20 November in Dubai.
+6. The envelope opens and displays the correct current-day letter.
+7. Refreshing the page does not randomly change the message.
+8. Previous letters cannot be accessed through the UI.
+9. The birthday destination is not implemented in this version.
+10. The supplied music file can be integrated without replacing it with another track.
+11. The website works on both mobile and desktop.
+12. No major buttons, links, or controls are broken.
+
+Build the first working version now. Prioritize a beautiful and emotionally warm experience, accurate date handling, and clean code over unnecessary extra features.
