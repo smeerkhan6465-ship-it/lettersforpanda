@@ -11,6 +11,8 @@ import { BirthdayLock } from './components/BirthdayLock';
 import { DailyCareCheck } from './components/DailyCareCheck';
 import { AudioPlayer } from './components/AudioPlayer';
 import { LetterView } from './components/LetterView';
+import { PromisesSection } from './components/PromisesSection';
+import { SaatAhadView } from './components/SaatAhadView';
 
 import { PasswordGate } from './components/PasswordGate';
 
@@ -19,12 +21,29 @@ type AppScreenState =
   | 'COUNTDOWN'
   | 'TRANSITION_TO_LETTER'
   | 'LETTER_VIEW'
+  | 'TRANSITION_TO_SAAT_AHAD'
+  | 'SAAT_AHAD'
   | 'TRANSITION_TO_COUNTDOWN';
+
+const INTRO_SEEN_STORAGE_KEY = 'saat_ahad_intro_seen_2026_11_14';
 
 function CountdownApp() {
   const [countdown, setCountdown] = useState<CountdownState>(() => getCountdownState());
   const [screenState, setScreenState] = useState<AppScreenState>('CARE_CHECK');
-  const { openLetterMusic, closeLetterMusic } = useDualAudio();
+  const [hasSeenSaatAhadIntro, setHasSeenSaatAhadIntro] = useState<boolean>(() => {
+    try {
+      return window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const {
+    openLetterMusic,
+    closeLetterMusic,
+    enterSaatAhadAudio,
+    startPromiseMusic,
+    exitSaatAhadAudio,
+  } = useDualAudio();
 
   // Update countdown every second and handle midnight rollover in Asia/Dubai
   useEffect(() => {
@@ -53,7 +72,7 @@ function CountdownApp() {
 
   const currentLetter = getLetterForDate(countdown.dubaiDateKey);
 
-  // START CINEMATIC OPENING TRANSITION
+  // START CINEMATIC OPENING TRANSITION FOR DAILY LETTER
   const handleStartOpenLetter = () => {
     if (screenState !== 'COUNTDOWN') return;
 
@@ -69,7 +88,7 @@ function CountdownApp() {
     }, 1600);
   };
 
-  // START CINEMATIC CLOSING TRANSITION
+  // START CINEMATIC CLOSING TRANSITION FOR DAILY LETTER
   const handleStartCloseLetter = () => {
     if (screenState !== 'LETTER_VIEW') return;
 
@@ -85,6 +104,57 @@ function CountdownApp() {
     }, 750);
   };
 
+  const shouldShowSaatAhadIntro =
+    countdown.dubaiDateKey === '2026-11-14' && !hasSeenSaatAhadIntro;
+
+  const handleMarkSaatAhadIntroSeen = () => {
+    setHasSeenSaatAhadIntro(true);
+    try {
+      window.localStorage.setItem(INTRO_SEEN_STORAGE_KEY, 'true');
+    } catch {
+      // Ignore storage failures in restricted contexts
+    }
+  };
+
+  // OPEN SAAT AHAD EXPERIENCE
+  const handleStartOpenSaatAhad = () => {
+    if (screenState !== 'COUNTDOWN') return;
+
+    // 1. Pause existing music1/music2 cleanly
+    enterSaatAhadAudio();
+
+    // 2. On Nov 15-20 or revisits (no intro letter), start Promise Audio directly on this click
+    //    On Nov 14 first visit, keep paused until she interacts with the intro letter CTA
+    if (!shouldShowSaatAhadIntro) {
+      startPromiseMusic();
+    }
+
+    // 3. Smooth fade into Saat Ahad
+    setScreenState('TRANSITION_TO_SAAT_AHAD');
+
+    setTimeout(() => {
+      setScreenState('SAAT_AHAD');
+    }, 850);
+  };
+
+  // CLOSE SAAT AHAD EXPERIENCE
+  const handleCloseSaatAhad = () => {
+    if (screenState !== 'SAAT_AHAD') return;
+
+    // 1. Stop & reset Promise Audio and restore Music 1 if not paused by user
+    exitSaatAhadAudio();
+
+    // 2. Fade cleanly back to Countdown
+    setScreenState('TRANSITION_TO_COUNTDOWN');
+
+    setTimeout(() => {
+      setScreenState('COUNTDOWN');
+    }, 750);
+  };
+
+  const isTransitioningToOverlay =
+    screenState === 'TRANSITION_TO_LETTER' || screenState === 'TRANSITION_TO_SAAT_AHAD';
+
   return (
     <div className="relative min-h-screen flex flex-col justify-between text-[#3A0E1E] selection:bg-[#E7C7CF] selection:text-[#3A0E1E] overflow-x-hidden">
       {screenState === 'CARE_CHECK' ? (
@@ -97,6 +167,18 @@ function CountdownApp() {
           {/* Discreet Floating Audio Control at Bottom-Right */}
           <AudioPlayer />
         </div>
+      ) : screenState === 'SAAT_AHAD' ? (
+        /* SCREEN 4: Dedicated Saat Ahad — 7 Promises Experience */
+        <div className="relative min-h-screen w-full bg-[#3A0E1E]">
+          <SaatAhadView
+            dubaiDateKey={countdown.dubaiDateKey}
+            shouldShowIntro={shouldShowSaatAhadIntro}
+            onMarkIntroSeen={handleMarkSaatAhadIntroSeen}
+            onClose={handleCloseSaatAhad}
+          />
+          {/* Discreet Floating Audio Control for Promise Audio */}
+          <AudioPlayer />
+        </div>
       ) : (
         /* SCREEN 2: Main Romantic Luxury Birthday Countdown & Transitions */
         <div
@@ -107,9 +189,7 @@ function CountdownApp() {
           {/* Deep Black Cherry Transition Overlay that dims the screen into darkness */}
           <div
             className={`fixed inset-0 z-30 pointer-events-none transition-opacity duration-1500 ease-in-out ${
-              screenState === 'TRANSITION_TO_LETTER'
-                ? 'opacity-100'
-                : 'opacity-0'
+              isTransitioningToOverlay ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
               background:
@@ -121,9 +201,7 @@ function CountdownApp() {
           {/* Luxury Ambient Rose Glow & Particles */}
           <div
             className={`transition-opacity duration-1000 ${
-              screenState === 'TRANSITION_TO_LETTER'
-                ? 'opacity-0 pointer-events-none'
-                : 'opacity-100'
+              isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
           >
             <BackgroundElements />
@@ -132,9 +210,7 @@ function CountdownApp() {
           {/* Top Header Bar */}
           <div
             className={`transition-opacity duration-1000 ${
-              screenState === 'TRANSITION_TO_LETTER'
-                ? 'opacity-0 pointer-events-none'
-                : 'opacity-100'
+              isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
           >
             <Header />
@@ -145,26 +221,28 @@ function CountdownApp() {
             {/* Panda Mascot Section */}
             <div
               className={`w-full transition-opacity duration-1000 ${
-                screenState === 'TRANSITION_TO_LETTER'
-                  ? 'opacity-0 pointer-events-none'
-                  : 'opacity-100'
+                isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
               }`}
             >
               <PandaMascot />
             </div>
 
+            {/* Independent Second Option: Saat Ahad — 7 Promises (Placed above Time Until Your Birthday) */}
+            <PromisesSection
+              onOpenSaatAhad={handleStartOpenSaatAhad}
+              isOpening={isTransitioningToOverlay}
+            />
+
             {/* Live Dubai Countdown */}
             <div
               className={`w-full transition-opacity duration-1000 ${
-                screenState === 'TRANSITION_TO_LETTER'
-                  ? 'opacity-0 pointer-events-none'
-                  : 'opacity-100'
+                isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
               }`}
             >
               <CountdownTimer countdown={countdown} />
             </div>
 
-            {/* Today's Sealed Envelope & Letter Reveal */}
+            {/* Today's Sealed Envelope & Daily Message */}
             <EnvelopeSection
               letter={currentLetter}
               onOpenLetter={handleStartOpenLetter}
@@ -174,9 +252,7 @@ function CountdownApp() {
             {/* Birthday Surprise Gate */}
             <div
               className={`w-full transition-opacity duration-1000 ${
-                screenState === 'TRANSITION_TO_LETTER'
-                  ? 'opacity-0 pointer-events-none'
-                  : 'opacity-100'
+                isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
               }`}
             >
               <BirthdayLock isBirthday={countdown.isBirthday} />
@@ -186,9 +262,7 @@ function CountdownApp() {
           {/* Quiet, Personal Footer */}
           <footer
             className={`relative z-10 pb-6 text-center text-xs text-[#A07A80] font-sans tracking-wide transition-opacity duration-1000 ${
-              screenState === 'TRANSITION_TO_LETTER'
-                ? 'opacity-0 pointer-events-none'
-                : 'opacity-100'
+              isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
           >
             <p>Made with all my love, for my Panda 🐼 ♡</p>

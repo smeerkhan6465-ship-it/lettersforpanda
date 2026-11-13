@@ -8,28 +8,41 @@ export const AudioPlayer: React.FC = () => {
     isPlaying,
     autoplayBlocked,
     isLetterOpen,
+    isPromiseMode,
     togglePlay,
     startMusicOnInteraction,
   } = useDualAudio();
 
   const handleControlClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (autoplayBlocked && !isPlaying) {
+    if (isPromiseMode) {
+      togglePlay();
+    } else if (autoplayBlocked && !isPlaying) {
       startMusicOnInteraction();
     } else {
       togglePlay();
     }
   };
 
-  const label = isPlaying
-    ? `Pause ${activeTrack === 'music1' ? 'background music' : 'letter music'}`
-    : `Play ${activeTrack === 'music1' ? 'background music' : 'letter music'}`;
+  const trackLabel =
+    activeTrack === 'music1'
+      ? 'background music'
+      : activeTrack === 'music2'
+      ? 'letter music'
+      : 'promise music';
 
-  // Adaptive styling: elegant ivory/blush on dark cherry when in letter view, soft porcelain/cranberry on countdown view
-  const baseClasses =
-    'fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 active:scale-95 group shadow-sm';
+  const label = isPlaying ? `Pause ${trackLabel}` : `Play ${trackLabel}`;
 
-  const styleClasses = isLetterOpen
+  const isDarkTheme = isLetterOpen || isPromiseMode;
+
+  // Adaptive styling: top-right in Saat Ahad to keep sticky bottom action bar unobstructed on mobile; bottom-right elsewhere
+  const positionClasses = isPromiseMode
+    ? 'fixed top-3.5 right-4 sm:top-4 sm:right-6'
+    : 'fixed bottom-5 right-5 sm:bottom-6 sm:right-6';
+
+  const baseClasses = `${positionClasses} z-50 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 active:scale-95 group shadow-sm cursor-pointer`;
+
+  const styleClasses = isDarkTheme
     ? isPlaying
       ? 'bg-[#3A0E1E]/85 border border-[#E7C7CF]/60 text-[#E7C7CF] hover:bg-[#4D1327] hover:border-[#E7C7CF] shadow-lg shadow-black/40'
       : 'bg-[#3A0E1E]/60 border border-[#E7C7CF]/30 text-[#A07A80] hover:text-[#E7C7CF] hover:border-[#E7C7CF]/50'
@@ -50,7 +63,7 @@ export const AudioPlayer: React.FC = () => {
           <Volume2 className="w-4 h-4 transition-transform group-hover:scale-105" />
           <span
             className={`absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full animate-ping opacity-75 ${
-              isLetterOpen ? 'bg-[#E7C7CF]' : 'bg-[#8E2D3B]'
+              isDarkTheme ? 'bg-[#E7C7CF]' : 'bg-[#8E2D3B]'
             }`}
           />
         </span>
