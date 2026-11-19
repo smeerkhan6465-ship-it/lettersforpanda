@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
-import { Lock, Gift, Sparkles, Heart } from 'lucide-react';
+import React from 'react';
+import { Lock, Gift, Sparkles, Unlock } from 'lucide-react';
 
 interface BirthdayLockProps {
   isBirthday: boolean;
+  isRealBirthday?: boolean;
+  enableTestMode?: boolean;
+  isTestUnlocked?: boolean;
+  onToggleTestUnlock?: () => void;
+  onOpenSurprise: () => void;
+  isOpening?: boolean;
 }
 
-export const BirthdayLock: React.FC<BirthdayLockProps> = ({ isBirthday }) => {
-  const [showSurpriseNotice, setShowSurpriseNotice] = useState(false);
-
+export const BirthdayLock: React.FC<BirthdayLockProps> = ({
+  isBirthday,
+  isRealBirthday = false,
+  enableTestMode = false,
+  isTestUnlocked = false,
+  onToggleTestUnlock,
+  onOpenSurprise,
+  isOpening = false,
+}) => {
   return (
     <section
       aria-label="Birthday Surprise Section"
@@ -22,7 +34,7 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({ isBirthday }) => {
 
       <div className="relative p-6 sm:p-8 rounded-3xl bg-[#F5E9ED]/75 hover:bg-white/90 backdrop-blur-md border border-[#E7C7CF] shadow-[0_6px_24px_rgba(58,14,30,0.03)] transition-all duration-300">
         {!isBirthday ? (
-          /* Locked State (Before 20 November) */
+          /* Locked State (Before 20 November 2026 in Asia/Dubai) */
           <div className="flex flex-col items-center space-y-3.5">
             {/* Minimal Gift Icon with Lock Detail */}
             <div className="relative">
@@ -44,8 +56,8 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({ isBirthday }) => {
               </p>
             </div>
 
-            {/* Locked Pill-shaped Indicator with subtle shimmer */}
-            <div className="pt-2">
+            {/* Locked Indicator */}
+            <div className="pt-2 flex flex-col items-center gap-2.5">
               <div
                 aria-disabled="true"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/60 border border-[#E7C7CF] text-xs font-medium text-[#8E2D3B] cursor-not-allowed select-none min-h-[40px] shadow-xs"
@@ -53,10 +65,21 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({ isBirthday }) => {
                 <Lock className="w-3.5 h-3.5 text-[#8E2D3B] opacity-80" />
                 <span className="tracking-wide">Unlocks on 20 November ♡</span>
               </div>
+
+              {enableTestMode && onToggleTestUnlock && !isRealBirthday && (
+                <button
+                  type="button"
+                  onClick={onToggleTestUnlock}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/70 hover:bg-white border border-dashed border-[#A07A80]/60 text-[11px] font-sans font-medium text-[#8E2D3B]/85 hover:text-[#8E2D3B] active:scale-[0.98] transition-all cursor-pointer min-h-[34px]"
+                >
+                  <Unlock className="w-3 h-3" />
+                  <span>Test Unlock Surprise</span>
+                </button>
+              )}
             </div>
           </div>
         ) : (
-          /* Unlocked State (On Birthday 20 November in Dubai) */
+          /* Unlocked State (On & After 20 November 2026 in Asia/Dubai, or Test Unlocked) */
           <div className="flex flex-col items-center space-y-3.5 animate-in fade-in zoom-in-95 duration-500">
             {/* Glowing Unlocked Gift */}
             <div className="relative">
@@ -76,46 +99,32 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({ isBirthday }) => {
               </p>
             </div>
 
-            {/* Active CTA: “Open your birthday surprise ♡” */}
-            <div className="pt-2 w-full max-w-xs">
+            {/* Active CTA: “Open Your Birthday Surprise ♡” */}
+            <div className="pt-2 w-full max-w-xs flex flex-col items-center gap-2.5">
               <button
                 type="button"
-                onClick={() => setShowSurpriseNotice(true)}
-                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#8E2D3B] via-[#731F2C] to-[#8E2D3B] text-white font-medium text-sm shadow-md shadow-[#8E2D3B]/25 hover:shadow-lg active:scale-[0.98] transition-all min-h-[48px] flex items-center justify-center gap-2 group"
+                onClick={onOpenSurprise}
+                disabled={isOpening}
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#8E2D3B] via-[#731F2C] to-[#8E2D3B] text-white font-medium text-sm sm:text-base shadow-md shadow-[#8E2D3B]/25 hover:shadow-lg active:scale-[0.98] transition-all min-h-[48px] flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-[#E7C7CF]" />
-                <span>Open your birthday surprise ♡</span>
+                <Sparkles className="w-4 h-4 text-[#E7C7CF] group-hover:scale-110 transition-transform" />
+                <span>Open Your Birthday Surprise ♡</span>
               </button>
+
+              {enableTestMode && isTestUnlocked && onToggleTestUnlock && !isRealBirthday && (
+                <button
+                  type="button"
+                  onClick={onToggleTestUnlock}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 hover:bg-white border border-dashed border-[#A07A80]/55 text-[11px] font-sans font-medium text-[#A07A80] hover:text-[#8E2D3B] active:scale-[0.98] transition-all cursor-pointer min-h-[32px]"
+                >
+                  <Lock className="w-3 h-3" />
+                  <span>Test Mode · Re-lock Surprise</span>
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
-
-      {/* Birthday Surprise Placeholder Dialog */}
-      {showSurpriseNotice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="relative max-w-sm w-full bg-[#FAF4F6] p-7 rounded-3xl border border-[#E7C7CF] shadow-2xl text-center animate-in zoom-in-95 duration-200">
-            <div className="w-13 h-13 rounded-full bg-[#F5E9ED] text-[#8E2D3B] flex items-center justify-center mx-auto mb-3 shadow-inner">
-              <Heart className="w-6 h-6 fill-[#8E2D3B] text-[#8E2D3B] animate-heartbeat" />
-            </div>
-
-            <h4 className="text-2xl font-serif-elegant font-normal text-[#3A0E1E] mb-1.5">
-              Happy Birthday, Meri Jaan! 🐼🎂💗
-            </h4>
-            <p className="text-xs sm:text-sm text-[#A07A80] font-sans leading-relaxed mb-6">
-              Your full birthday celebration portal will connect right here. Today is all about celebrating you!
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setShowSurpriseNotice(false)}
-              className="w-full py-3 px-4 rounded-xl bg-[#8E2D3B] hover:bg-[#731F2C] text-white font-medium text-xs shadow-sm active:scale-[0.98] transition-all"
-            >
-              Close with love ♡
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

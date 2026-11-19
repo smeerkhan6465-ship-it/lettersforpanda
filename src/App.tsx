@@ -13,6 +13,7 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { LetterView } from './components/LetterView';
 import { PromisesSection } from './components/PromisesSection';
 import { SaatAhadView } from './components/SaatAhadView';
+import { BirthdaySurpriseView } from './components/BirthdaySurpriseView';
 
 import { PasswordGate } from './components/PasswordGate';
 
@@ -23,13 +24,19 @@ type AppScreenState =
   | 'LETTER_VIEW'
   | 'TRANSITION_TO_SAAT_AHAD'
   | 'SAAT_AHAD'
+  | 'TRANSITION_TO_BIRTHDAY_SURPRISE'
+  | 'BIRTHDAY_SURPRISE'
   | 'TRANSITION_TO_COUNTDOWN';
 
 const INTRO_SEEN_STORAGE_KEY = 'saat_ahad_intro_seen_2026_11_14';
 
+// Temporary testing flag for previewing the November 20 Birthday Surprise before launch
+const ENABLE_BIRTHDAY_SURPRISE_TEST_MODE = true;
+
 function CountdownApp() {
   const [countdown, setCountdown] = useState<CountdownState>(() => getCountdownState());
   const [screenState, setScreenState] = useState<AppScreenState>('CARE_CHECK');
+  const [isBirthdayTestUnlocked, setIsBirthdayTestUnlocked] = useState(false);
   const [hasSeenSaatAhadIntro, setHasSeenSaatAhadIntro] = useState<boolean>(() => {
     try {
       return window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true';
@@ -43,6 +50,8 @@ function CountdownApp() {
     enterSaatAhadAudio,
     startPromiseMusic,
     exitSaatAhadAudio,
+    openBirthdayMusic,
+    exitBirthdayMusic,
   } = useDualAudio();
 
   // Update countdown every second and handle midnight rollover in Asia/Dubai
@@ -152,8 +161,43 @@ function CountdownApp() {
     }, 750);
   };
 
+  const isBirthdaySurpriseUnlocked =
+    countdown.isBirthday || (ENABLE_BIRTHDAY_SURPRISE_TEST_MODE && isBirthdayTestUnlocked);
+
+  // OPEN BIRTHDAY SURPRISE EXPERIENCE (20 November 2026 Asia/Dubai)
+  const handleStartOpenBirthdaySurprise = () => {
+    if (screenState !== 'COUNTDOWN' || !isBirthdaySurpriseUnlocked) return;
+
+    // 1. Immediately pause other tracks and start Music10.mp3 inside this click gesture
+    openBirthdayMusic();
+
+    // 2. Smooth fade into Birthday Surprise
+    setScreenState('TRANSITION_TO_BIRTHDAY_SURPRISE');
+
+    setTimeout(() => {
+      setScreenState('BIRTHDAY_SURPRISE');
+    }, 850);
+  };
+
+  // CLOSE BIRTHDAY SURPRISE EXPERIENCE
+  const handleCloseBirthdaySurprise = () => {
+    if (screenState !== 'BIRTHDAY_SURPRISE') return;
+
+    // 1. Stop & reset Music10.mp3 and restore Music 1 if not paused by user
+    exitBirthdayMusic();
+
+    // 2. Fade cleanly back to Countdown
+    setScreenState('TRANSITION_TO_COUNTDOWN');
+
+    setTimeout(() => {
+      setScreenState('COUNTDOWN');
+    }, 750);
+  };
+
   const isTransitioningToOverlay =
-    screenState === 'TRANSITION_TO_LETTER' || screenState === 'TRANSITION_TO_SAAT_AHAD';
+    screenState === 'TRANSITION_TO_LETTER' ||
+    screenState === 'TRANSITION_TO_SAAT_AHAD' ||
+    screenState === 'TRANSITION_TO_BIRTHDAY_SURPRISE';
 
   return (
     <div className="relative min-h-screen flex flex-col justify-between text-[#3A0E1E] selection:bg-[#E7C7CF] selection:text-[#3A0E1E] overflow-x-hidden">
@@ -177,6 +221,13 @@ function CountdownApp() {
             onClose={handleCloseSaatAhad}
           />
           {/* Discreet Floating Audio Control for Promise Audio */}
+          <AudioPlayer />
+        </div>
+      ) : screenState === 'BIRTHDAY_SURPRISE' ? (
+        /* SCREEN 5: Dedicated Birthday Surprise Experience (Unlocks 20 Nov Asia/Dubai) */
+        <div className="relative min-h-screen w-full bg-[#3A0E1E]">
+          <BirthdaySurpriseView onClose={handleCloseBirthdaySurprise} />
+          {/* Discreet Floating Audio Control for Music10.mp3 */}
           <AudioPlayer />
         </div>
       ) : (
@@ -255,7 +306,15 @@ function CountdownApp() {
                 isTransitioningToOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100'
               }`}
             >
-              <BirthdayLock isBirthday={countdown.isBirthday} />
+              <BirthdayLock
+                isBirthday={isBirthdaySurpriseUnlocked}
+                isRealBirthday={countdown.isBirthday}
+                enableTestMode={ENABLE_BIRTHDAY_SURPRISE_TEST_MODE}
+                isTestUnlocked={isBirthdayTestUnlocked}
+                onToggleTestUnlock={() => setIsBirthdayTestUnlocked((prev) => !prev)}
+                onOpenSurprise={handleStartOpenBirthdaySurprise}
+                isOpening={isTransitioningToOverlay}
+              />
             </div>
           </main>
 

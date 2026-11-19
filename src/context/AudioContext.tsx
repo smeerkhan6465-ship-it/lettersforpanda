@@ -8,7 +8,7 @@ import React, {
   ReactNode,
 } from 'react';
 
-export type ActiveTrack = 'music1' | 'music2' | 'promise';
+export type ActiveTrack = 'music1' | 'music2' | 'promise' | 'birthday';
 
 interface AudioContextType {
   activeTrack: ActiveTrack;
@@ -17,9 +17,12 @@ interface AudioContextType {
   autoplayBlocked: boolean;
   isLetterOpen: boolean;
   isPromiseMode: boolean;
+  isBirthdaySurpriseOpen: boolean;
   music1Ready: boolean;
   music2Ready: boolean;
   promiseReady: boolean;
+  birthdayReady: boolean;
+  birthdayAudioUnavailable: boolean;
   togglePlay: () => Promise<void>;
   startMusicOnInteraction: () => Promise<void>;
   openLetterMusic: () => Promise<void>;
@@ -27,6 +30,8 @@ interface AudioContextType {
   enterSaatAhadAudio: () => void;
   startPromiseMusic: () => Promise<void>;
   exitSaatAhadAudio: () => Promise<void>;
+  openBirthdayMusic: () => Promise<void>;
+  exitBirthdayMusic: () => Promise<void>;
   trackName: string;
 }
 
@@ -38,11 +43,14 @@ export const MUSIC2_SRC = '/assets/aistudio/music2_be725d27.mp3';
 export const MUSIC2_FALLBACK = '/assets/music2.mp3';
 export const PROMISE_AUDIO_SRC = '/assets/aistudio/Promise_Audio_df194155.mp3';
 export const PROMISE_AUDIO_FALLBACK = '/assets/Promise%20Audio.mp3';
+export const BIRTHDAY_AUDIO_SRC = '/assets/aistudio/Music10_cf92543e.mp3';
+export const BIRTHDAY_AUDIO_FALLBACK = '/assets/Music10.mp3';
 
 export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const music1Ref = useRef<HTMLAudioElement | null>(null);
   const music2Ref = useRef<HTMLAudioElement | null>(null);
   const promiseAudioRef = useRef<HTMLAudioElement | null>(null);
+  const birthdayAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [activeTrack, setActiveTrack] = useState<ActiveTrack>('music1');
   const activeTrackRef = useRef<ActiveTrack>('music1');
@@ -50,12 +58,17 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [userPaused, setUserPaused] = useState(false);
   const [promiseUserPaused, setPromiseUserPaused] = useState(false);
   const promiseUserPausedRef = useRef(false);
+  const [birthdayUserPaused, setBirthdayUserPaused] = useState(false);
+  const birthdayUserPausedRef = useRef(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [isPromiseMode, setIsPromiseMode] = useState(false);
+  const [isBirthdaySurpriseOpen, setIsBirthdaySurpriseOpen] = useState(false);
   const [music1Ready, setMusic1Ready] = useState(false);
   const [music2Ready, setMusic2Ready] = useState(false);
   const [promiseReady, setPromiseReady] = useState(false);
+  const [birthdayReady, setBirthdayReady] = useState(false);
+  const [birthdayAudioUnavailable, setBirthdayAudioUnavailable] = useState(false);
 
   const updateActiveTrack = useCallback((track: ActiveTrack) => {
     activeTrackRef.current = track;
@@ -67,17 +80,22 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const m1 = music1Ref.current;
     const m2 = music2Ref.current;
     const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
 
-    if (!m1 || !m2 || !pa) return;
+    if (!m1 || !m2 || !pa || !ba) return;
 
-    // Preload audio resources cleanly without playing
     m1.load();
     m2.load();
     pa.load();
+    ba.load();
 
     const handleM1CanPlay = () => setMusic1Ready(true);
     const handleM2CanPlay = () => setMusic2Ready(true);
     const handlePromiseCanPlay = () => setPromiseReady(true);
+    const handleBirthdayCanPlay = () => {
+      setBirthdayReady(true);
+      setBirthdayAudioUnavailable(false);
+    };
 
     const handleM1Play = () => {
       if (activeTrackRef.current === 'music1') setIsPlaying(true);
@@ -101,6 +119,14 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (activeTrackRef.current === 'promise') setIsPlaying(false);
     };
 
+    const handleBirthdayPlay = () => {
+      if (activeTrackRef.current === 'birthday') setIsPlaying(true);
+      setBirthdayAudioUnavailable(false);
+    };
+    const handleBirthdayPause = () => {
+      if (activeTrackRef.current === 'birthday') setIsPlaying(false);
+    };
+
     // Resilient fallbacks if primary paths are unavailable
     const handleM1Error = () => {
       if (m1 && !m1.src.endsWith(MUSIC1_FALLBACK)) {
@@ -115,28 +141,44 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }
     };
     const handlePromiseError = () => {
-      if (pa && !pa.src.endsWith(PROMISE_AUDIO_FALLBACK) && !pa.src.endsWith('/assets/Promise Audio.mp3')) {
+      if (
+        pa &&
+        !pa.src.endsWith(PROMISE_AUDIO_FALLBACK) &&
+        !pa.src.endsWith('/assets/Promise Audio.mp3')
+      ) {
         pa.src = PROMISE_AUDIO_FALLBACK;
         pa.load();
       } else {
         setPromiseReady(false);
       }
     };
+    const handleBirthdayError = () => {
+      if (ba && !ba.src.endsWith(BIRTHDAY_AUDIO_FALLBACK)) {
+        ba.src = BIRTHDAY_AUDIO_FALLBACK;
+        ba.load();
+      } else {
+        setBirthdayReady(false);
+        setBirthdayAudioUnavailable(true);
+      }
+    };
 
     m1.addEventListener('canplay', handleM1CanPlay);
     m2.addEventListener('canplay', handleM2CanPlay);
     pa.addEventListener('canplay', handlePromiseCanPlay);
+    ba.addEventListener('canplay', handleBirthdayCanPlay);
     m1.addEventListener('play', handleM1Play);
     m1.addEventListener('pause', handleM1Pause);
     m2.addEventListener('play', handleM2Play);
     m2.addEventListener('pause', handleM2Pause);
     pa.addEventListener('play', handlePromisePlay);
     pa.addEventListener('pause', handlePromisePause);
+    ba.addEventListener('play', handleBirthdayPlay);
+    ba.addEventListener('pause', handleBirthdayPause);
     m1.addEventListener('error', handleM1Error);
     m2.addEventListener('error', handleM2Error);
     pa.addEventListener('error', handlePromiseError);
+    ba.addEventListener('error', handleBirthdayError);
 
-    // Audio is loaded but kept paused until user enters and interacts
     setIsPlaying(false);
     setAutoplayBlocked(true);
 
@@ -144,18 +186,23 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       m1.removeEventListener('canplay', handleM1CanPlay);
       m2.removeEventListener('canplay', handleM2CanPlay);
       pa.removeEventListener('canplay', handlePromiseCanPlay);
+      ba.removeEventListener('canplay', handleBirthdayCanPlay);
       m1.removeEventListener('play', handleM1Play);
       m1.removeEventListener('pause', handleM1Pause);
       m2.removeEventListener('play', handleM2Play);
       m2.removeEventListener('pause', handleM2Pause);
       pa.removeEventListener('play', handlePromisePlay);
       pa.removeEventListener('pause', handlePromisePause);
+      ba.removeEventListener('play', handleBirthdayPlay);
+      ba.removeEventListener('pause', handleBirthdayPause);
       m1.removeEventListener('error', handleM1Error);
       m2.removeEventListener('error', handleM2Error);
       pa.removeEventListener('error', handlePromiseError);
+      ba.removeEventListener('error', handleBirthdayError);
       m1.pause();
       m2.pause();
       pa.pause();
+      ba.pause();
     };
   }, []);
 
@@ -166,16 +213,18 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         ? music1Ref.current
         : activeTrack === 'music2'
         ? music2Ref.current
-        : promiseAudioRef.current;
+        : activeTrack === 'promise'
+        ? promiseAudioRef.current
+        : birthdayAudioRef.current;
     if (currentAudio) {
       setIsPlaying(!currentAudio.paused);
     }
   }, [activeTrack]);
 
-  // Start music1 on any user interaction if not already playing and not in letter/promise mode
+  // Start music1 on any user interaction if not already playing and not in a special mode
   const startMusicOnInteraction = useCallback(async () => {
     const m1 = music1Ref.current;
-    if (!m1 || isLetterOpen || isPromiseMode || userPaused) return;
+    if (!m1 || isLetterOpen || isPromiseMode || isBirthdaySurpriseOpen || userPaused) return;
 
     if (m1.paused) {
       try {
@@ -186,16 +235,23 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         console.warn('Playback error on interaction:', err);
       }
     }
-  }, [isLetterOpen, isPromiseMode, userPaused]);
+  }, [isLetterOpen, isPromiseMode, isBirthdaySurpriseOpen, userPaused]);
 
   // Toggle play/pause for currently active track
   const togglePlay = useCallback(async () => {
     const m1 = music1Ref.current;
     const m2 = music2Ref.current;
     const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
 
     const currentAudio =
-      activeTrack === 'music1' ? m1 : activeTrack === 'music2' ? m2 : pa;
+      activeTrack === 'music1'
+        ? m1
+        : activeTrack === 'music2'
+        ? m2
+        : activeTrack === 'promise'
+        ? pa
+        : ba;
     if (!currentAudio) return;
 
     if (!currentAudio.paused) {
@@ -204,17 +260,18 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (activeTrack === 'promise') {
         promiseUserPausedRef.current = true;
         setPromiseUserPaused(true);
+      } else if (activeTrack === 'birthday') {
+        birthdayUserPausedRef.current = true;
+        setBirthdayUserPaused(true);
       } else {
         setUserPaused(true);
       }
     } else {
-      // Guarantee no track overlap before playing
-      if (activeTrack === 'promise') {
-        if (m1 && !m1.paused) m1.pause();
-        if (m2 && !m2.paused) m2.pause();
-      } else {
-        if (pa && !pa.paused) pa.pause();
-      }
+      // Guarantee strict non-overlap before playing
+      if (activeTrack !== 'music1' && m1 && !m1.paused) m1.pause();
+      if (activeTrack !== 'music2' && m2 && !m2.paused) m2.pause();
+      if (activeTrack !== 'promise' && pa && !pa.paused) pa.pause();
+      if (activeTrack !== 'birthday' && ba && !ba.paused) ba.pause();
 
       try {
         await currentAudio.play();
@@ -222,6 +279,9 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (activeTrack === 'promise') {
           promiseUserPausedRef.current = false;
           setPromiseUserPaused(false);
+        } else if (activeTrack === 'birthday') {
+          birthdayUserPausedRef.current = false;
+          setBirthdayUserPaused(false);
         } else {
           setUserPaused(false);
           setAutoplayBlocked(false);
@@ -237,14 +297,17 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const openLetterMusic = useCallback(async () => {
     setIsLetterOpen(true);
     setIsPromiseMode(false);
+    setIsBirthdaySurpriseOpen(false);
     updateActiveTrack('music2');
 
     const m1 = music1Ref.current;
     const m2 = music2Ref.current;
     const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
 
     if (m1 && !m1.paused) m1.pause();
     if (pa && !pa.paused) pa.pause();
+    if (ba && !ba.paused) ba.pause();
 
     if (m2) {
       try {
@@ -286,14 +349,16 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, [userPaused, updateActiveTrack]);
 
-  // Enter Saat Ahad mode: silence music1/music2 immediately, keep Promise Audio paused until intro interaction
+  // Enter Saat Ahad mode: silence other tracks immediately
   const enterSaatAhadAudio = useCallback(() => {
     const m1 = music1Ref.current;
     const m2 = music2Ref.current;
     const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
 
     if (m1 && !m1.paused) m1.pause();
     if (m2 && !m2.paused) m2.pause();
+    if (ba && !ba.paused) ba.pause();
     if (pa) {
       pa.pause();
       try {
@@ -306,6 +371,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     promiseUserPausedRef.current = false;
     setPromiseUserPaused(false);
     setIsLetterOpen(false);
+    setIsBirthdaySurpriseOpen(false);
     setIsPromiseMode(true);
     updateActiveTrack('promise');
     setIsPlaying(false);
@@ -316,13 +382,14 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const m1 = music1Ref.current;
     const m2 = music2Ref.current;
     const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
 
     if (m1 && !m1.paused) m1.pause();
     if (m2 && !m2.paused) m2.pause();
+    if (ba && !ba.paused) ba.pause();
 
     if (!pa || promiseUserPausedRef.current) return;
 
-    // Keep playing continuously without restarting if already active
     if (!pa.paused) {
       setIsPlaying(true);
       return;
@@ -347,7 +414,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       try {
         pa.currentTime = 0;
       } catch {
-        // ignore seek errors if media isn't loaded yet
+        // ignore seek errors
       }
     }
 
@@ -369,25 +436,108 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, [userPaused, updateActiveTrack]);
 
+  // Enter Birthday Surprise mode: pause all other tracks and start Music10.mp3 directly on click
+  const openBirthdayMusic = useCallback(async () => {
+    const m1 = music1Ref.current;
+    const m2 = music2Ref.current;
+    const pa = promiseAudioRef.current;
+    const ba = birthdayAudioRef.current;
+
+    if (m1 && !m1.paused) m1.pause();
+    if (m2 && !m2.paused) m2.pause();
+    if (pa && !pa.paused) pa.pause();
+
+    birthdayUserPausedRef.current = false;
+    setBirthdayUserPaused(false);
+    setIsLetterOpen(false);
+    setIsPromiseMode(false);
+    setIsBirthdaySurpriseOpen(true);
+    updateActiveTrack('birthday');
+
+    if (!ba) return;
+
+    // Never restart if already playing
+    if (!ba.paused) {
+      setIsPlaying(true);
+      return;
+    }
+
+    try {
+      ba.currentTime = 0;
+    } catch {
+      // ignore seek errors if metadata hasn't loaded yet
+    }
+
+    try {
+      await ba.play();
+      setIsPlaying(true);
+      setBirthdayAudioUnavailable(false);
+    } catch (err) {
+      console.warn('Birthday surprise audio playback blocked or unavailable:', err);
+      setIsPlaying(false);
+    }
+  }, [updateActiveTrack]);
+
+  // Exit Birthday Surprise mode: stop & reset Music10.mp3, then restore music1 if not userPaused
+  const exitBirthdayMusic = useCallback(async () => {
+    const m1 = music1Ref.current;
+    const ba = birthdayAudioRef.current;
+
+    if (ba) {
+      ba.pause();
+      try {
+        ba.currentTime = 0;
+      } catch {
+        // ignore seek errors
+      }
+    }
+
+    birthdayUserPausedRef.current = false;
+    setBirthdayUserPaused(false);
+    setIsBirthdaySurpriseOpen(false);
+    updateActiveTrack('music1');
+
+    if (m1 && !userPaused) {
+      try {
+        await m1.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.warn('Music 1 resume failed after Birthday Surprise:', err);
+        setIsPlaying(false);
+      }
+    } else {
+      setIsPlaying(false);
+    }
+  }, [userPaused, updateActiveTrack]);
+
   const trackName =
     activeTrack === 'music1'
       ? 'Our Theme ♡'
       : activeTrack === 'music2'
       ? 'Letter Song 💌'
-      : 'Saat Ahad ♡';
+      : activeTrack === 'promise'
+      ? 'Saat Ahad ♡'
+      : 'Birthday Surprise ♡';
 
   return (
     <AudioContext.Provider
       value={{
         activeTrack,
         isPlaying,
-        userPaused: isPromiseMode ? promiseUserPaused : userPaused,
+        userPaused: isBirthdaySurpriseOpen
+          ? birthdayUserPaused
+          : isPromiseMode
+          ? promiseUserPaused
+          : userPaused,
         autoplayBlocked,
         isLetterOpen,
         isPromiseMode,
+        isBirthdaySurpriseOpen,
         music1Ready,
         music2Ready,
         promiseReady,
+        birthdayReady,
+        birthdayAudioUnavailable,
         togglePlay,
         startMusicOnInteraction,
         openLetterMusic,
@@ -395,6 +545,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         enterSaatAhadAudio,
         startPromiseMusic,
         exitSaatAhadAudio,
+        openBirthdayMusic,
+        exitBirthdayMusic,
         trackName,
       }}
     >
@@ -428,6 +580,16 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       >
         <source src={PROMISE_AUDIO_SRC} type="audio/mpeg" />
         <source src={PROMISE_AUDIO_FALLBACK} type="audio/mpeg" />
+      </audio>
+      <audio
+        ref={birthdayAudioRef}
+        src={BIRTHDAY_AUDIO_SRC}
+        loop
+        preload="metadata"
+        className="hidden"
+      >
+        <source src={BIRTHDAY_AUDIO_SRC} type="audio/mpeg" />
+        <source src={BIRTHDAY_AUDIO_FALLBACK} type="audio/mpeg" />
       </audio>
 
       {children}

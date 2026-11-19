@@ -9,13 +9,20 @@ export const AudioPlayer: React.FC = () => {
     autoplayBlocked,
     isLetterOpen,
     isPromiseMode,
+    isBirthdaySurpriseOpen,
+    birthdayAudioUnavailable,
     togglePlay,
     startMusicOnInteraction,
   } = useDualAudio();
 
+  // Do not show a broken audio control if the birthday soundtrack fails to load
+  if (isBirthdaySurpriseOpen && birthdayAudioUnavailable) {
+    return null;
+  }
+
   const handleControlClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isPromiseMode) {
+    if (isPromiseMode || isBirthdaySurpriseOpen) {
       togglePlay();
     } else if (autoplayBlocked && !isPlaying) {
       startMusicOnInteraction();
@@ -29,14 +36,17 @@ export const AudioPlayer: React.FC = () => {
       ? 'background music'
       : activeTrack === 'music2'
       ? 'letter music'
-      : 'promise music';
+      : activeTrack === 'promise'
+      ? 'promise music'
+      : 'birthday surprise music';
 
   const label = isPlaying ? `Pause ${trackLabel}` : `Play ${trackLabel}`;
 
-  const isDarkTheme = isLetterOpen || isPromiseMode;
+  const isDarkTheme = isLetterOpen || isPromiseMode || isBirthdaySurpriseOpen;
+  const isTopRightDocked = isPromiseMode || isBirthdaySurpriseOpen;
 
-  // Adaptive styling: top-right in Saat Ahad to keep sticky bottom action bar unobstructed on mobile; bottom-right elsewhere
-  const positionClasses = isPromiseMode
+  // Adaptive positioning: top-right in Saat Ahad & Birthday Surprise to keep sticky bottom action bars unobstructed on mobile
+  const positionClasses = isTopRightDocked
     ? 'fixed top-3.5 right-4 sm:top-4 sm:right-6'
     : 'fixed bottom-5 right-5 sm:bottom-6 sm:right-6';
 
