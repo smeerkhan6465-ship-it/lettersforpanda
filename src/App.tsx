@@ -30,13 +30,9 @@ type AppScreenState =
 
 const INTRO_SEEN_STORAGE_KEY = 'saat_ahad_intro_seen_2026_11_14';
 
-// Temporary testing flag for previewing the November 20 Birthday Surprise before launch
-const ENABLE_BIRTHDAY_SURPRISE_TEST_MODE = true;
-
 function CountdownApp() {
   const [countdown, setCountdown] = useState<CountdownState>(() => getCountdownState());
   const [screenState, setScreenState] = useState<AppScreenState>('CARE_CHECK');
-  const [isBirthdayTestUnlocked, setIsBirthdayTestUnlocked] = useState(false);
   const [hasSeenSaatAhadIntro, setHasSeenSaatAhadIntro] = useState<boolean>(() => {
     try {
       return window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true';
@@ -161,12 +157,9 @@ function CountdownApp() {
     }, 750);
   };
 
-  const isBirthdaySurpriseUnlocked =
-    countdown.isBirthday || (ENABLE_BIRTHDAY_SURPRISE_TEST_MODE && isBirthdayTestUnlocked);
-
   // OPEN BIRTHDAY SURPRISE EXPERIENCE (20 November 2026 Asia/Dubai)
   const handleStartOpenBirthdaySurprise = () => {
-    if (screenState !== 'COUNTDOWN' || !isBirthdaySurpriseUnlocked) return;
+    if (screenState !== 'COUNTDOWN' || !countdown.isBirthday) return;
 
     // 1. Immediately pause other tracks and start Music10.mp3 inside this click gesture
     openBirthdayMusic();
@@ -307,11 +300,7 @@ function CountdownApp() {
               }`}
             >
               <BirthdayLock
-                isBirthday={isBirthdaySurpriseUnlocked}
-                isRealBirthday={countdown.isBirthday}
-                enableTestMode={ENABLE_BIRTHDAY_SURPRISE_TEST_MODE}
-                isTestUnlocked={isBirthdayTestUnlocked}
-                onToggleTestUnlock={() => setIsBirthdayTestUnlocked((prev) => !prev)}
+                isBirthday={countdown.isBirthday}
                 onOpenSurprise={handleStartOpenBirthdaySurprise}
                 isOpening={isTransitioningToOverlay}
               />

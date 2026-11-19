@@ -1,22 +1,14 @@
 import React from 'react';
-import { Lock, Gift, Sparkles, Unlock } from 'lucide-react';
+import { Lock, Gift, Sparkles } from 'lucide-react';
 
 interface BirthdayLockProps {
   isBirthday: boolean;
-  isRealBirthday?: boolean;
-  enableTestMode?: boolean;
-  isTestUnlocked?: boolean;
-  onToggleTestUnlock?: () => void;
   onOpenSurprise: () => void;
   isOpening?: boolean;
 }
 
 export const BirthdayLock: React.FC<BirthdayLockProps> = ({
   isBirthday,
-  isRealBirthday = false,
-  enableTestMode = false,
-  isTestUnlocked = false,
-  onToggleTestUnlock,
   onOpenSurprise,
   isOpening = false,
 }) => {
@@ -57,7 +49,7 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({
             </div>
 
             {/* Locked Indicator */}
-            <div className="pt-2 flex flex-col items-center gap-2.5">
+            <div className="pt-2">
               <div
                 aria-disabled="true"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/60 border border-[#E7C7CF] text-xs font-medium text-[#8E2D3B] cursor-not-allowed select-none min-h-[40px] shadow-xs"
@@ -65,21 +57,10 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({
                 <Lock className="w-3.5 h-3.5 text-[#8E2D3B] opacity-80" />
                 <span className="tracking-wide">Unlocks on 20 November ♡</span>
               </div>
-
-              {enableTestMode && onToggleTestUnlock && !isRealBirthday && (
-                <button
-                  type="button"
-                  onClick={onToggleTestUnlock}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/70 hover:bg-white border border-dashed border-[#A07A80]/60 text-[11px] font-sans font-medium text-[#8E2D3B]/85 hover:text-[#8E2D3B] active:scale-[0.98] transition-all cursor-pointer min-h-[34px]"
-                >
-                  <Unlock className="w-3 h-3" />
-                  <span>Test Unlock Surprise</span>
-                </button>
-              )}
             </div>
           </div>
         ) : (
-          /* Unlocked State (On & After 20 November 2026 in Asia/Dubai, or Test Unlocked) */
+          /* Unlocked State (On & After 20 November 2026 in Asia/Dubai) */
           <div className="flex flex-col items-center space-y-3.5 animate-in fade-in zoom-in-95 duration-500">
             {/* Glowing Unlocked Gift */}
             <div className="relative">
@@ -100,7 +81,7 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({
             </div>
 
             {/* Active CTA: “Open Your Birthday Surprise ♡” */}
-            <div className="pt-2 w-full max-w-xs flex flex-col items-center gap-2.5">
+            <div className="pt-2 w-full max-w-xs">
               <button
                 type="button"
                 onClick={onOpenSurprise}
@@ -110,17 +91,6 @@ export const BirthdayLock: React.FC<BirthdayLockProps> = ({
                 <Sparkles className="w-4 h-4 text-[#E7C7CF] group-hover:scale-110 transition-transform" />
                 <span>Open Your Birthday Surprise ♡</span>
               </button>
-
-              {enableTestMode && isTestUnlocked && onToggleTestUnlock && !isRealBirthday && (
-                <button
-                  type="button"
-                  onClick={onToggleTestUnlock}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 hover:bg-white border border-dashed border-[#A07A80]/55 text-[11px] font-sans font-medium text-[#A07A80] hover:text-[#8E2D3B] active:scale-[0.98] transition-all cursor-pointer min-h-[32px]"
-                >
-                  <Lock className="w-3 h-3" />
-                  <span>Test Mode · Re-lock Surprise</span>
-                </button>
-              )}
             </div>
           </div>
         )}
